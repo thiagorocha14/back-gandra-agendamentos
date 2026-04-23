@@ -23,13 +23,95 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+API em [NestJS](https://github.com/nestjs/nest) com TypeORM e MySQL. Use o arquivo `.env` na raiz (não versionado; veja modelo abaixo) para alinhar variáveis com o Docker Compose.
 
-## Project setup
+## Variáveis de ambiente (`.env`)
+
+Crie um arquivo `.env` na raiz do repositório. O Docker Compose lê esse arquivo para substituir `${...}` nos YAMLs e para repassar credenciais aos serviços.
+
+| Variável | Descrição |
+|----------|-----------|
+| `APP_PORT` | Porta no host exposta para a API (padrão `3000`). |
+| `DATABASE_HOST` | Host do MySQL. **Dentro do Compose**, use `db` (nome do serviço). **Fora do Docker**, use `127.0.0.1` e a porta em `MYSQL_PUBLISH_PORT`. |
+| `DATABASE_PORT` | Porta MySQL **dentro** da rede Docker (`3306`). |
+| `DATABASE_USER` | Usuário da aplicação (deve coincidir com `MYSQL_USER` no compose). |
+| `DATABASE_PASSWORD` | Senha da aplicação (deve coincidir com `MYSQL_PASSWORD`). |
+| `DATABASE_NAME` | Nome do banco (deve coincidir com `MYSQL_DATABASE`). |
+| `MYSQL_ROOT_PASSWORD` | Senha do usuário `root` do MySQL (usada no healthcheck em produção). |
+| `MYSQL_PUBLISH_PORT` | Porta no **host** mapeada para o MySQL (dev: `3307`; prod costuma ser `3306`). |
+| `MYSQL_CONTAINER_NAME` | Nome do container do MySQL (principalmente `docker-compose.prod.yml`). |
+
+Exemplo para desenvolvimento com Docker (mesmos valores sugeridos no repositório):
+
+```env
+APP_PORT=3000
+DATABASE_HOST=db
+DATABASE_PORT=3306
+DATABASE_USER=app
+DATABASE_PASSWORD=app
+DATABASE_NAME=nest
+MYSQL_ROOT_PASSWORD=root
+MYSQL_PUBLISH_PORT=3307
+MYSQL_CONTAINER_NAME=mysql-db
+```
+
+Em **produção**, altere todas as senhas e nomes fracos; o `docker-compose.prod.yml` exige `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME` e `MYSQL_ROOT_PASSWORD` definidos (sem fallback).
+
+## Rodar com Docker (recomendado)
+
+Pré-requisitos: [Docker](https://docs.docker.com/get-docker/) e plugin Compose (`docker compose`) ou `docker-compose` legado.
+
+### Desenvolvimento (hot reload + MySQL)
+
+Na raiz do projeto, com `.env` configurado:
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+Se o seu ambiente só tiver `docker-compose` (v1):
+
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+- API: `http://localhost:${APP_PORT:-3000}` (por padrão `http://localhost:3000`).
+- MySQL no host (DBeaver, CLI, etc.): `127.0.0.1` e porta `${MYSQL_PUBLISH_PORT}` (padrão dev `3307`), usuário/senha conforme `.env`.
+
+Encerrar e remover contêineres da stack de dev:
+
+```bash
+docker compose -f docker-compose.dev.yml down
+```
+
+### Produção
+
+```bash
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+```
+
+Parar:
+
+```bash
+docker compose -f docker-compose.prod.yml down
+```
+
+Após configurar o TypeORM com migrações, execute os comandos de migração dentro do contêiner da API, por exemplo:
+
+```bash
+docker compose -f docker-compose.prod.yml exec nest-app npm run <script-de-migracao>
+```
+
+(substitua pelo script que você definir no `package.json`).
+
+## Project setup (local, sem Docker)
 
 ```bash
 $ npm install
 ```
+
+Garanta um MySQL acessível e variáveis coerentes (por exemplo `DATABASE_HOST=127.0.0.1`, `DATABASE_PORT` igual à porta do seu MySQL). O Nest não carrega `.env` automaticamente a menos que você use algo como `@nestjs/config`.
 
 ## Compile and run the project
 

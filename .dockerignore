@@ -1,0 +1,18 @@
+# Reduz drasticamente o contexto enviado ao Docker (evita node_modules, .git, etc.)
+node_modules
+dist
+build
+coverage
+.nyc_output
+.git
+.github
+.idea
+.vscode
+*.log
+npm-debug.log*
+.env
+.env.*
+!.env.example
+.temp
+.tmp
+**/.DS_Store
