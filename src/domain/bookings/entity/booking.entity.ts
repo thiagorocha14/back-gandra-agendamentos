@@ -24,6 +24,9 @@ export class Booking {
   @Column({ name: 'guest_name', type: 'varchar', length: 100, nullable: true })
   guestName: string | null;
 
+  @Column({ name: 'phone', type: 'varchar', length: 30, nullable: true })
+  phone: string | null;
+
   @Column({ name: 'booking_date', type: 'date' })
   bookingDate: string;
 
