@@ -6,7 +6,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-/** Valores esperados: pending | approved | cancelled | completed */
+export enum BookingStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed',
+}
+
 @Entity('bookings')
 @Index('uq_court_slot', ['courtId', 'bookingDate', 'startTime', 'endTime'], {
   unique: true,
@@ -36,8 +42,12 @@ export class Booking {
   @Column({ name: 'end_time', type: 'time' })
   endTime: string;
 
-  @Column({ type: 'varchar', length: 15, default: 'pending' })
-  status: string;
+  @Column({
+    type: 'enum',
+    enum: BookingStatus,
+    default: BookingStatus.PENDING,
+  })
+  status: BookingStatus;
 
   @Column({ type: 'decimal', precision: 8, scale: 2, default: 0 })
   price: string;

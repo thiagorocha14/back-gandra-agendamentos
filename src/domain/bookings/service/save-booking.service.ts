@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 import { Court } from '../../courts/entity/court.entity';
 import { CreateBookingDto } from '../dto/create-booking.dto';
-import { Booking } from '../entity/booking.entity';
+import { Booking, BookingStatus } from '../entity/booking.entity';
 
 function isDuplicateKeyError(error: unknown): boolean {
   if (!(error instanceof QueryFailedError)) return false;
@@ -46,7 +46,7 @@ export class SaveBookingService {
       bookingDate: dto.bookingDate,
       startTime: this.normalizeTime(dto.startTime),
       endTime: this.normalizeTime(dto.endTime),
-      status: 'pending',
+      status: BookingStatus.PENDING,
       price: dto.price ?? '0',
     });
 
