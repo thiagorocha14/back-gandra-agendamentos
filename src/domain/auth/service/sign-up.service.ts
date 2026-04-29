@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { User } from '../../users/entity/user.entity';
+import { UserType } from '../../users/enum/user-type.enum';
 import { SignUpDto } from '../dto/sign-up.dto';
 import { AuthSessionResponse } from './auth-payload';
 
@@ -30,7 +31,7 @@ export class SignUpService {
       email,
       phone: dto.phone ?? null,
       passwordHash,
-      userType: 'regular',
+      userType: UserType.REGULAR,
       active: true,
     });
     await this.userRepository.save(user);

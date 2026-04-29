@@ -4,12 +4,14 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateBookingBundleDto } from '../dto/create-booking-bundle.dto';
 import { BookingBundle } from '../entity/booking-bundle.entity';
 import { SaveBookingBundlesService } from '../service/save-booking-bundles.service';
+import { AdminAuthGuard } from '../../../../auth/guard/admin-auth.guard';
 
 @Controller('booking-bundles')
 export class SaveBookingBundlesController {
@@ -18,6 +20,7 @@ export class SaveBookingBundlesController {
   ) {}
 
   @Post()
+  @UseGuards(AdminAuthGuard)
   @UseInterceptors(FileInterceptor('coverImage'))
   async saveBookingBundle(
     @Body() dto: CreateBookingBundleDto,

@@ -1,10 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { extname, join } from 'node:path';
 import { Repository } from 'typeorm';
 import { CreateBookingBundleDto } from '../dto/create-booking-bundle.dto';
 import { BookingBundle } from '../entity/booking-bundle.entity';
+import { persistBundleCoverImage } from '../util/persist-bundle-cover-image';
 
 @Injectable()
 export class SaveBookingBundlesService {
@@ -17,7 +16,7 @@ export class SaveBookingBundlesService {
     dto: CreateBookingBundleDto,
     file: { mimetype: string; originalname: string; buffer: Buffer },
   ): Promise<BookingBundle> {
-    const coverImage = await this.persistCoverImage(file);
+    const coverImage = await persistBundleCoverImage(file);
 
     const bookingBundle = this.bookingBundleRepository.create({
       name: dto.name,
@@ -29,25 +28,5 @@ export class SaveBookingBundlesService {
     });
 
     return this.bookingBundleRepository.save(bookingBundle);
-  }
-
-  private async persistCoverImage(file: {
-    mimetype: string;
-    originalname: string;
-    buffer: Buffer;
-  }): Promise<string> {
-    if (!file.mimetype.startsWith('image/')) {
-      throw new BadRequestException('Arquivo inválido: envie uma imagem.');
-    }
-
-    const uploadDirectory = join(process.cwd(), 'uploads', 'booking-bundles');
-    await mkdir(uploadDirectory, { recursive: true });
-
-    const safeExtension = extname(file.originalname) || '.jpg';
-    const fileName = `bundle-cover-${Date.now()}${safeExtension}`;
-    const destinationPath = join(uploadDirectory, fileName);
-
-    await writeFile(destinationPath, file.buffer);
-    return `/uploads/booking-bundles/${fileName}`;
   }
 }

@@ -6,6 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 import { Court } from '../../courts/entity/court.entity';
+import { User } from '../../users/entity/user.entity';
+import { UserType } from '../../users/enum/user-type.enum';
 import { CreateBookingDto } from '../dto/create-booking.dto';
 import { Booking, BookingStatus } from '../entity/booking.entity';
 
@@ -28,6 +30,8 @@ export class SaveBookingService {
     private readonly bookingRepository: Repository<Booking>,
     @InjectRepository(Court)
     private readonly courtRepository: Repository<Court>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async execute(dto: CreateBookingDto): Promise<Booking> {
@@ -38,6 +42,27 @@ export class SaveBookingService {
       throw new NotFoundException('Quadra não encontrada ou inativa.');
     }
 
+    let status = BookingStatus.PENDING;
+    let approvedBy: string | null = null;
+    let approvedAt: Date | null = null;
+
+    if (dto.userId) {
+      const user = await this.userRepository.findOne({
+        where: { id: dto.userId, active: true },
+      });
+      if (!user) {
+        throw new NotFoundException('Usuário não encontrado ou inativo.');
+      }
+      if (
+        user.userType === UserType.MEMBER ||
+        user.userType === UserType.ADMIN
+      ) {
+        status = BookingStatus.APPROVED;
+        approvedBy = user.id;
+        approvedAt = new Date();
+      }
+    }
+
     const booking = this.bookingRepository.create({
       courtId: dto.courtId,
       userId: dto.userId ?? null,
@@ -46,8 +71,10 @@ export class SaveBookingService {
       bookingDate: dto.bookingDate,
       startTime: this.normalizeTime(dto.startTime),
       endTime: this.normalizeTime(dto.endTime),
-      status: BookingStatus.PENDING,
+      status,
       price: dto.price ?? '0',
+      approvedBy,
+      approvedAt,
     });
 
     try {
