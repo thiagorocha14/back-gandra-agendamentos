@@ -10,4 +10,10 @@ export class Court {
 
   @Column({ type: 'boolean', default: true })
   active: boolean;
+
+  @Column({ type: 'float', nullable: false })
+  day_price: number;
+
+  @Column({ type: 'float', nullable: false })
+  night_price: number;
 }

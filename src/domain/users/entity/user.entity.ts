@@ -4,8 +4,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { UserType } from '../enum/user-type.enum';
 
-/** Valores esperados: regular | monthly | admin */
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -23,8 +23,13 @@ export class User {
   @Column({ name: 'password_hash', type: 'varchar', length: 255 })
   passwordHash: string;
 
-  @Column({ name: 'user_type', type: 'varchar', length: 10, default: 'regular' })
-  userType: string;
+  @Column({
+    name: 'user_type',
+    type: 'enum',
+    enum: UserType,
+    default: UserType.REGULAR,
+  })
+  userType: UserType;
 
   @Column({ type: 'boolean', default: true })
   active: boolean;
