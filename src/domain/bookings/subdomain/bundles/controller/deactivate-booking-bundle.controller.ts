@@ -1,4 +1,4 @@
-import { Controller, Param, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Param, Put, UseGuards } from '@nestjs/common';
 import { AdminAuthGuard } from '../../../../auth/guard/admin-auth.guard';
 import { BookingBundle } from '../entity/booking-bundle.entity';
 import { DeactivateBookingBundleService } from '../service/deactivate-booking-bundle.service';
@@ -9,7 +9,7 @@ export class DeactivateBookingBundleController {
     private readonly deactivateBookingBundleService: DeactivateBookingBundleService,
   ) {}
 
-  @Patch(':id/deactivate')
+  @Put(':id/deactivate')
   @UseGuards(AdminAuthGuard)
   async deactivateBookingBundle(
     @Param('id') id: string,

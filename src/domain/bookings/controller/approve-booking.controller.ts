@@ -1,7 +1,7 @@
 import {
   Controller,
   Param,
-  Patch,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -16,7 +16,7 @@ export class ApproveBookingController {
     private readonly approveBookingService: ApproveBookingService,
   ) {}
 
-  @Patch('approve-booking/:id')
+  @Put('approve-booking/:id')
   @UseGuards(AdminAuthGuard)
   async approveBooking(
     @Param('id') id: string,

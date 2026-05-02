@@ -13,7 +13,7 @@ export class IndexBookingBundlesService {
   ) {}
 
   async execute(user: JwtAuthUser): Promise<BookingBundle[]> {
-    const isAdmin = user.userType === UserType.ADMIN;
+    const isAdmin = user?.userType === UserType.ADMIN;
     return this.bookingBundleRepository.find({
       where: isAdmin ? {} : { active: true },
       order: { price: 'ASC' },

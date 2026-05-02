@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Param,
-  Patch,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { AdminAuthGuard } from '../../auth/guard/admin-auth.guard';
@@ -14,7 +14,7 @@ import { UpdateUserService } from '../service/update-user.service';
 export class UpdateUserController {
   constructor(private readonly updateUserService: UpdateUserService) {}
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(AdminAuthGuard)
   async updateUser(
     @Param('id') id: string,

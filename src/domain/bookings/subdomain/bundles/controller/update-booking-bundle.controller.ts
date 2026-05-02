@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Param,
-  Patch,
+  Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -19,7 +19,7 @@ export class UpdateBookingBundleController {
     private readonly updateBookingBundleService: UpdateBookingBundleService,
   ) {}
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(AdminAuthGuard)
   @UseInterceptors(FileInterceptor('coverImage'))
   async updateBookingBundle(
