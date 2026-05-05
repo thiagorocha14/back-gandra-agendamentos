@@ -14,7 +14,7 @@ export class BookingPayment {
   @Column({ name: 'booking_id', type: 'bigint' })
   bookingId: string;
 
-  @Column({ name: 'payment_method', type: 'varchar', length: 10 })
+  @Column({ name: 'payment_method', type: 'varchar', length: 32 })
   paymentMethod: string;
 
   @Column({ type: 'decimal', precision: 8, scale: 2 })
